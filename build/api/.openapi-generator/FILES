@@ -1,0 +1,13 @@
+.openapi-generator-ignore
+README.md
+src/main/kotlin/clipboardhealth/challenge/nursify/HomeController.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/SpringDocConfiguration.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/ShiftsApiController.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/ShiftsApiService.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiAvailableShifts.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiFacility.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiGroupedShifts.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiPage.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiShift.kt
+src/main/kotlin/clipboardhealth/challenge/nursify/api/model/ApiWorkerShiftRange.kt
+src/main/resources/openapi.yaml

@@ -1,0 +1,58 @@
+spring:
+  application:
+    name: nursify
+  jpa:
+    open-in-view: 'false'
+    hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      naming-strategy: org.hibernate.cfg.EJB3NamingStrategy
+      naming:
+        ddl-auto: none
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        format-sql: 'true'
+        generate_statistics: 'true'
+    show-sql: 'true'
+  datasource:
+    hikari:
+      data-source-properties: stringtype=unspecified
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+
+server:
+  error:
+    include-stacktrace: on_param
+
+management:
+  endpoints.web.exposure.include: info, health, metrics, prometheus
+  tracing:
+    sampling:
+      probability: 0.0
+  endpoint:
+    health:
+      show-details: always
+  metrics:
+    tags:
+      application: ${spring.application.name}
+    distribution:
+      percentiles-histogram:
+        http:
+          server:
+            requests: 'true'
+
+logging:
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+    console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]){yellow} %clr(:){red} %clr(%m){faint}%n"
+  level:
+    org:
+      hibernate:
+        SQL: DEBUG
+
+info:
+  app: Nursify
+  
+hibernate:
+  globally_quoted_identifiers: true

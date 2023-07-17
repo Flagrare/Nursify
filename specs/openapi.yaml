@@ -1,0 +1,178 @@
+openapi: 3.0.1
+info:
+  title: Nursify web api
+  version: 1.0.0
+  description: 'Api for Nursify Web Application'
+
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local server
+
+tags:
+  - name: shifts
+    description: Handles shifts for nurses
+
+paths:
+  /shifts/{workerId}:
+    post:
+      tags:
+        - shifts
+      summary: Gets shifts from worker
+      operationId: getWorkerShifts
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiWorkerShiftRange'
+      parameters:
+        - in: path
+          name: workerId
+          schema:
+            type: integer
+            format: int64
+          required: true
+        - in: query
+          name: facilityId
+          schema:
+            type: integer
+            format: int64
+        - in: query
+          name: searchFromPast
+          schema:
+            type: boolean
+            default: false
+          required: false
+        - $ref: '#/components/parameters/pageNumberParam'
+        - $ref: '#/components/parameters/pageSizeParam'
+        - $ref: '#/components/parameters/sortParam'
+
+      responses:
+        200:
+          description: Shift info
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiAvailableShifts'
+        204:
+          description: No shifts available
+
+components:
+  schemas:
+    ApiAvailableShifts:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/ApiPage'
+        - type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiGroupedShifts'
+
+    ApiGroupedShifts:
+      type: object
+      properties:
+        start:
+          type: string
+          format: date
+        shifts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApiShift'
+
+    ApiShift:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        start:
+          type: string
+          format: date-time
+        end:
+          type: string
+          format: date-time
+        facility:
+          $ref: '#/components/schemas/ApiFacility'
+      required: [ id, start, end, facility ]
+
+    ApiWorkerShiftRange:
+      type: object
+      properties:
+        startDate:
+          type: string
+          format: date-time
+        endDate:
+          type: string
+          format: date-time
+    
+    ApiFacility:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        isActive:
+          type: boolean
+          default: true
+      required:
+        - id
+        - name
+
+    ApiPage:
+      type: object
+      properties:
+        pageNumber:
+          type: integer
+          format: int32
+          minimum: 0
+        pageSize:
+          type: integer
+          format: int32
+          minimum: 10
+        numberOfElements:
+          type: integer
+          format: int32
+        totalPages:
+          type: integer
+          format: int32
+        totalElements:
+          type: integer
+          format: int64
+        isLast:
+          type: boolean
+  parameters:
+    pageNumberParam:
+      name: pageNumber
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 0
+    pageSizeParam:
+      name: pageSize
+      in: query
+      required: false
+      schema:
+        type: integer
+        format: int32
+        minimum: 0
+        default: 20
+    sortParam:
+      name: sort
+      in: query
+      required: false
+      explode: true
+      description: "According to the Spring Pageable format the field name must be followed by the sortDirection. Example: [ 'start;desc', 'end;asc', 'facility.id;desc ]"
+      schema:
+        type: array
+        items:
+          type: string
+
+
+

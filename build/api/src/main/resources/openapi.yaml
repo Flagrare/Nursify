@@ -1,0 +1,278 @@
+openapi: 3.0.1
+info:
+  description: Api for Nursify Web Application
+  title: Nursify web api
+  version: 1.0.0
+servers:
+- description: Local server
+  url: http://localhost:5000/api/v1
+tags:
+- description: Handles shifts for nurses
+  name: shifts
+paths:
+  /shifts/{workerId}:
+    post:
+      operationId: getWorkerShifts
+      parameters:
+      - explode: false
+        in: path
+        name: workerId
+        required: true
+        schema:
+          format: int64
+          type: integer
+        style: simple
+      - explode: true
+        in: query
+        name: facilityId
+        required: false
+        schema:
+          format: int64
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: searchFromPast
+        required: false
+        schema:
+          default: false
+          type: boolean
+        style: form
+      - explode: true
+        in: query
+        name: pageNumber
+        required: false
+        schema:
+          default: 0
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: pageSize
+        required: false
+        schema:
+          default: 20
+          format: int32
+          minimum: 0
+          type: integer
+        style: form
+      - description: "According to the Spring Pageable format the field name must\
+          \ be followed by the sortDirection. Example: [ 'start;desc', 'end;asc',\
+          \ 'facility.id;desc ]"
+        explode: true
+        in: query
+        name: sort
+        required: false
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ApiWorkerShiftRange'
+        required: false
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiAvailableShifts'
+          description: Shift info
+        "204":
+          description: No shifts available
+      summary: Gets shifts from worker
+      tags:
+      - shifts
+components:
+  parameters:
+    pageNumberParam:
+      explode: true
+      in: query
+      name: pageNumber
+      required: false
+      schema:
+        default: 0
+        format: int32
+        minimum: 0
+        type: integer
+      style: form
+    pageSizeParam:
+      explode: true
+      in: query
+      name: pageSize
+      required: false
+      schema:
+        default: 20
+        format: int32
+        minimum: 0
+        type: integer
+      style: form
+    sortParam:
+      description: "According to the Spring Pageable format the field name must be\
+        \ followed by the sortDirection. Example: [ 'start;desc', 'end;asc', 'facility.id;desc\
+        \ ]"
+      explode: true
+      in: query
+      name: sort
+      required: false
+      schema:
+        items:
+          type: string
+        type: array
+      style: form
+  schemas:
+    ApiAvailableShifts:
+      allOf:
+      - $ref: '#/components/schemas/ApiPage'
+      - type: object
+      example:
+        content:
+        - start: 2000-01-23
+          shifts:
+          - start: 2000-01-23T04:56:07.000+00:00
+            end: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            facility:
+              name: name
+              id: 6
+              isActive: true
+          - start: 2000-01-23T04:56:07.000+00:00
+            end: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            facility:
+              name: name
+              id: 6
+              isActive: true
+        - start: 2000-01-23
+          shifts:
+          - start: 2000-01-23T04:56:07.000+00:00
+            end: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            facility:
+              name: name
+              id: 6
+              isActive: true
+          - start: 2000-01-23T04:56:07.000+00:00
+            end: 2000-01-23T04:56:07.000+00:00
+            id: 0
+            facility:
+              name: name
+              id: 6
+              isActive: true
+      properties:
+        content:
+          items:
+            $ref: '#/components/schemas/ApiGroupedShifts'
+          type: array
+      type: object
+    ApiGroupedShifts:
+      example:
+        start: 2000-01-23
+        shifts:
+        - start: 2000-01-23T04:56:07.000+00:00
+          end: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          facility:
+            name: name
+            id: 6
+            isActive: true
+        - start: 2000-01-23T04:56:07.000+00:00
+          end: 2000-01-23T04:56:07.000+00:00
+          id: 0
+          facility:
+            name: name
+            id: 6
+            isActive: true
+      properties:
+        start:
+          format: date
+          type: string
+        shifts:
+          items:
+            $ref: '#/components/schemas/ApiShift'
+          type: array
+      type: object
+    ApiShift:
+      example:
+        start: 2000-01-23T04:56:07.000+00:00
+        end: 2000-01-23T04:56:07.000+00:00
+        id: 0
+        facility:
+          name: name
+          id: 6
+          isActive: true
+      properties:
+        id:
+          format: int64
+          type: integer
+        start:
+          format: date-time
+          type: string
+        end:
+          format: date-time
+          type: string
+        facility:
+          $ref: '#/components/schemas/ApiFacility'
+      required:
+      - end
+      - facility
+      - id
+      - start
+      type: object
+    ApiWorkerShiftRange:
+      example:
+        endDate: 2000-01-23T04:56:07.000+00:00
+        startDate: 2000-01-23T04:56:07.000+00:00
+      properties:
+        startDate:
+          format: date-time
+          type: string
+        endDate:
+          format: date-time
+          type: string
+      type: object
+    ApiFacility:
+      example:
+        name: name
+        id: 6
+        isActive: true
+      properties:
+        id:
+          format: int64
+          type: integer
+        name:
+          type: string
+        isActive:
+          default: true
+          type: boolean
+      required:
+      - id
+      - name
+      type: object
+    ApiPage:
+      properties:
+        pageNumber:
+          format: int32
+          minimum: 0
+          type: integer
+        pageSize:
+          format: int32
+          minimum: 10
+          type: integer
+        numberOfElements:
+          format: int32
+          type: integer
+        totalPages:
+          format: int32
+          type: integer
+        totalElements:
+          format: int64
+          type: integer
+        isLast:
+          type: boolean
+      type: object
